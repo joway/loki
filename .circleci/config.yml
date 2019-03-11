@@ -1,0 +1,18 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.11
+    working_directory: /go/src/github.com/joway/logger
+    steps:
+      - checkout
+      - run: sudo apt update && sudo apt install -y gcc
+      - run: ./dep.sh
+      - run: env GO111MODULE=on go build
+      - run: env GO111MODULE=on go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
+      - run: bash <(curl -s https://codecov.io/bash)
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      - build
