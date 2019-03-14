@@ -9,7 +9,6 @@ func TestLogger(t *testing.T) {
 	SetFormatter(NewStandardFormatter())
 
 	Info("x: %s", "hi")
-	Info("%s")
 	Info("xxx")
 	Debug("xxx")
 	Error("xxx")

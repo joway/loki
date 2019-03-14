@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"github.com/logrusorgru/aurora"
+	"time"
 )
 
 var (
@@ -62,7 +63,7 @@ func NewStandardFormatter() Formatter {
 }
 
 func (f StandardFormatter) format(format string, a ...interface{}) string {
-	return fmt.Sprintf(format, a...)
+	return fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), fmt.Sprintf(format, a...))
 }
 
 type Handler interface {
