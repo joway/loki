@@ -15,7 +15,8 @@ var (
 
 	DEBUG = 1
 	INFO  = 2
-	ERROR = 3
+	WARN  = 3
+	ERROR = 4
 )
 
 func SetLevel(level int) {
@@ -41,6 +42,12 @@ func Debug(format string, a ...interface{}) {
 func Info(format string, a ...interface{}) {
 	if INFO >= logger.level {
 		logger.handler.output(aurora.Blue(logger.formatter.format(format, a...)))
+	}
+}
+
+func Warn(format string, a ...interface{}) {
+	if WARN >= logger.level {
+		logger.handler.output(aurora.Green(logger.formatter.format(format, a...)))
 	}
 }
 

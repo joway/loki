@@ -5,11 +5,12 @@ import (
 )
 
 func TestLogger(t *testing.T) {
-	SetLevel(INFO)
+	SetLevel(DEBUG)
 	SetFormatter(NewStandardFormatter())
+	msg := "Hi, I'm loki! 你好，我是洛基！"
 
-	Info("x: %s", "hi")
-	Info("xxx")
-	Debug("xxx")
-	Error("xxx")
+	Debug("msg: %s", msg)
+	Info("msg: %s", msg)
+	Warn("msg: %s", msg)
+	Error("msg: %s", msg)
 }
