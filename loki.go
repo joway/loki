@@ -3,6 +3,7 @@ package loki
 import (
 	"fmt"
 	"github.com/logrusorgru/aurora"
+	"os"
 	"time"
 )
 
@@ -55,6 +56,11 @@ func Error(format string, a ...interface{}) {
 	if ERROR >= logger.level {
 		logger.handler.output(aurora.Red(logger.formatter.format(format, a...)))
 	}
+}
+
+func Fatal(format string, a ...interface{}) {
+	Error(format, a...)
+	os.Exit(1)
 }
 
 type Formatter interface {

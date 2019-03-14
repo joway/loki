@@ -13,4 +13,5 @@ func TestLogger(t *testing.T) {
 	Info("msg: %s", msg)
 	Warn("msg: %s", msg)
 	Error("msg: %s", msg)
+	//Fatal("msg: %s", msg)
 }
