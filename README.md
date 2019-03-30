@@ -64,7 +64,7 @@ defer fp.Close()
 flushIntervalMs := 1000
 l.SetHandler(loki.NewFileHandler(fp, flushIntervalMs))
 
-loki.Info("x: %s", "hi")
+l.Info("x: %s", "hi")
 ```
 
 ### Change time format
