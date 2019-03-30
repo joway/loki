@@ -63,24 +63,30 @@ func TestLoggerFormatter(t *testing.T) {
 	f := ErrFormatter{}
 	SetFormatter(f)
 	Info(errors.New("test error"))
+
+	SetFormatter(NewStandardFormatter())
 }
 
 func TestLoggerFileHandler(t *testing.T) {
 	//timeFormat
-	l := New("app:xxx")
 	fp, err := os.OpenFile(testFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	defer fp.Close()
 	assert.NoError(t, err)
-	l.SetHandler(NewFileHandler(fp, 10))
-	l.Info("hello1")
-	l.Info("hello2")
+	SetHandler(NewFileHandler(fp, 10))
+	SetLevel(INFO)
+	Debug("debug")
+	Info("info")
+	Warn("warn")
+	Error("error")
 	content, _ := ioutil.ReadFile(testFilePath)
 	assert.Equal(t, "", string(content))
 	time.Sleep(time.Second)
 
 	content, _ = ioutil.ReadFile(testFilePath)
-	assert.Contains(t, string(content), "app:xxx hello1")
-	assert.Contains(t, string(content), "app:xxx hello2")
+	assert.NotContains(t, string(content), "debug")
+	assert.Contains(t, string(content), "info")
+	assert.Contains(t, string(content), "warn")
+	assert.Contains(t, string(content), "error")
 }
 
 func TestLoggerSetting(t *testing.T) {
