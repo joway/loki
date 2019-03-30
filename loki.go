@@ -34,16 +34,6 @@ func init() {
 	}
 }
 
-// SetLevel set the level of logger
-func SetLevel(level int) {
-	logger.level = level
-}
-
-// SetFormatter set the formatter of logger
-func SetFormatter(formatter Formatter) {
-	logger.formatter = formatter
-}
-
 // Logger is a instance to handle logs
 type Logger struct {
 	name      string
@@ -76,68 +66,88 @@ func (l Logger) Check() bool {
 	return false
 }
 
+// SetLevel set the level of logger
+func (l *Logger) SetLevel(level int) {
+	l.level = level
+}
+
+// SetFormatter set the formatter of logger
+func (l *Logger) SetFormatter(formatter Formatter) {
+	l.formatter = formatter
+}
+
 // Debug output level DEBUG log
-func (l Logger) Debug(format string, a ...interface{}) {
+func (l Logger) Debug(a ...interface{}) {
 	if DEBUG >= l.level {
-		l.handler.output(l.formatter.format(format, a...))
+		l.handler.output(l.formatter.format(a...))
 	}
 }
 
 // Info output level INFO log
-func (l Logger) Info(format string, a ...interface{}) {
+func (l Logger) Info(a ...interface{}) {
 	if INFO >= l.level {
-		l.handler.output(aurora.Blue(l.formatter.format(format, a...)))
+		l.handler.output(aurora.Blue(l.formatter.format(a...)))
 	}
 }
 
 // Warn output level WARN log
-func (l Logger) Warn(format string, a ...interface{}) {
+func (l Logger) Warn(a ...interface{}) {
 	if WARN >= l.level {
-		l.handler.output(aurora.Green(l.formatter.format(format, a...)))
+		l.handler.output(aurora.Green(l.formatter.format(a...)))
 	}
 }
 
 // Error output level ERROR log
-func (l Logger) Error(format string, a ...interface{}) {
+func (l Logger) Error(a ...interface{}) {
 	if ERROR >= l.level {
-		l.handler.output(aurora.Red(l.formatter.format(format, a...)))
+		l.handler.output(aurora.Red(l.formatter.format(a...)))
 	}
 }
 
 // Fatal output level ERROR log and exit with code 1
-func (l Logger) Fatal(format string, a ...interface{}) {
-	Error(format, a...)
+func (l Logger) Fatal(a ...interface{}) {
+	Error(a...)
 	os.Exit(1)
 }
 
+// SetLevel set the level of logger
+func SetLevel(level int) {
+	logger.SetLevel(level)
+}
+
+// SetFormatter set the formatter of logger
+func SetFormatter(formatter Formatter) {
+	logger.SetFormatter(formatter)
+}
+
 // Debug output level DEBUG log
-func Debug(format string, a ...interface{}) {
-	logger.Debug(format, a...)
+func Debug(a ...interface{}) {
+	logger.Debug(a...)
 }
 
 // Info output level INFO log
-func Info(format string, a ...interface{}) {
-	logger.Info(format, a...)
+func Info(a ...interface{}) {
+	logger.Info(a...)
 }
 
 // Warn output level WARN log
-func Warn(format string, a ...interface{}) {
-	logger.Warn(format, a...)
+func Warn(a ...interface{}) {
+	logger.Warn(a...)
 }
 
 // Error output level ERROR log
-func Error(format string, a ...interface{}) {
-	logger.Error(format, a...)
+func Error(a ...interface{}) {
+	logger.Error(a...)
 }
 
 // Fatal output level ERROR log and exit with code 1
-func Fatal(format string, a ...interface{}) {
-	logger.Fatal(format, a...)
+func Fatal(a ...interface{}) {
+	logger.Fatal(a...)
 }
 
 // Formatter format the message
 type Formatter interface {
-	format(format string, a ...interface{}) string
+	format(a ...interface{}) string
 }
 
 // StandardFormatter default formatter
@@ -150,8 +160,17 @@ func NewStandardFormatter() Formatter {
 	return StandardFormatter{}
 }
 
-func (f StandardFormatter) format(format string, a ...interface{}) string {
-	return fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), fmt.Sprintf(format, a...))
+func (f StandardFormatter) format(a ...interface{}) string {
+	if len(a) == 0 {
+		return ""
+	}
+
+	ts := time.Now().Format(time.RFC3339)
+	format, ok := a[0].(string)
+	if !ok {
+		return fmt.Sprintf("%s Logger format error with args %s", ts, a)
+	}
+	return fmt.Sprintf("%s %s", ts, fmt.Sprintf(format, a[1:]...))
 }
 
 // Handler handle the output process
