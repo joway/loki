@@ -5,13 +5,13 @@
 [![codecov](https://codecov.io/gh/joway/loki/branch/master/graph/badge.svg)](https://codecov.io/gh/joway/loki)
 [![CircleCI](https://circleci.com/gh/joway/loki.svg?style=shield)](https://circleci.com/gh/joway/loki)
 
-Inspired by a popular NodeJS logger [debug](https://www.npmjs.com/package/debug).
+Inspired by a popular NodeJS logger library: [debug](https://www.npmjs.com/package/debug).
 
 ## Feature
 
+- zero configuration for most use cases.
 - Colorful console output
 - Enable logger by environment easily
-- Minimalist
 
 ![](./demo.png)
 
