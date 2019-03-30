@@ -39,7 +39,7 @@ loki.Debug("x: %s", "hi")
 loki.Error("x: %s", "hi")
 ```
 
-### Create you own logger
+### Create your logger
 
 ```go
 logger := loki.New("app:xxx")
@@ -77,7 +77,7 @@ loki.SetTimeFormatter(time.RFC822)
 loki.SetTimeFormatter("")
 ```
 
-### Use you own logger formatter
+### Use your custom logger formatter
 
 ```go
 type ErrFormatter struct {
