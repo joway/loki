@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.11
-    working_directory: /go/src/github.com/joway/logger
+    working_directory: /go/src/github.com/joway/loki
     steps:
       - checkout
       - run: sudo apt update && sudo apt install -y gcc
