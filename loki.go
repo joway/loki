@@ -1,9 +1,11 @@
 package loki
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/gobwas/glob"
 	"github.com/logrusorgru/aurora"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -40,15 +42,18 @@ type Logger struct {
 	level     int
 	formatter Formatter
 	handler   Handler
+
+	timeFormat string
 }
 
 // New create a Logger instance with with its name
 func New(name string) Logger {
 	return Logger{
-		name:      name,
-		level:     INFO,
-		formatter: NewStandardFormatter(),
-		handler:   NewConsoleHandler(),
+		name:       name,
+		level:      INFO,
+		formatter:  NewStandardFormatter(),
+		handler:    NewConsoleHandler(),
+		timeFormat: time.RFC3339,
 	}
 }
 
@@ -71,48 +76,78 @@ func (l *Logger) SetLevel(level int) {
 	l.level = level
 }
 
+// SetHandler set the handler of logger
+func (l *Logger) SetHandler(handler Handler) {
+	l.handler = handler
+}
+
 // SetFormatter set the formatter of logger
 func (l *Logger) SetFormatter(formatter Formatter) {
 	l.formatter = formatter
 }
 
+// SetTimeFormatter set the time format string of logger
+func (l *Logger) SetTimeFormatter(format string) {
+	l.timeFormat = format
+}
+
+// Compile return final compiled log string
+func (l Logger) Compile(a ...interface{}) string {
+	msg := l.formatter.format(a...)
+	if l.timeFormat == "" {
+		return fmt.Sprintf("%s %s", l.name, msg)
+	}
+	ts := time.Now().Format(l.timeFormat)
+	if l.name == loggerRootName {
+		return fmt.Sprintf("%s %s", ts, msg)
+	}
+	return fmt.Sprintf("%s %s %s", ts, l.name, msg)
+}
+
 // Debug output level DEBUG log
 func (l Logger) Debug(a ...interface{}) {
-	if DEBUG >= l.level {
-		l.handler.output(l.formatter.format(a...))
+	if l.Check() && DEBUG >= l.level {
+		l.handler.debug(l.Compile(a...))
 	}
 }
 
 // Info output level INFO log
 func (l Logger) Info(a ...interface{}) {
-	if INFO >= l.level {
-		l.handler.output(aurora.Blue(l.formatter.format(a...)))
+	if l.Check() && INFO >= l.level {
+		l.handler.info(l.Compile(a...))
 	}
 }
 
 // Warn output level WARN log
 func (l Logger) Warn(a ...interface{}) {
-	if WARN >= l.level {
-		l.handler.output(aurora.Green(l.formatter.format(a...)))
+	if l.Check() && WARN >= l.level {
+		l.handler.warn(l.Compile(a...))
 	}
 }
 
 // Error output level ERROR log
 func (l Logger) Error(a ...interface{}) {
-	if ERROR >= l.level {
-		l.handler.output(aurora.Red(l.formatter.format(a...)))
+	if l.Check() && ERROR >= l.level {
+		l.handler.error(l.Compile(a...))
 	}
 }
 
 // Fatal output level ERROR log and exit with code 1
 func (l Logger) Fatal(a ...interface{}) {
-	Error(a...)
-	os.Exit(1)
+	if l.Check() && ERROR >= l.level {
+		l.handler.error(l.Compile(a...))
+		os.Exit(1)
+	}
 }
 
 // SetLevel set the level of logger
 func SetLevel(level int) {
 	logger.SetLevel(level)
+}
+
+// SetHandler set the handler of logger
+func SetHandler(handler Handler) {
+	logger.SetHandler(handler)
 }
 
 // SetFormatter set the formatter of logger
@@ -164,18 +199,19 @@ func (f StandardFormatter) format(a ...interface{}) string {
 	if len(a) == 0 {
 		return ""
 	}
-
-	ts := time.Now().Format(time.RFC3339)
 	format, ok := a[0].(string)
 	if !ok {
-		return fmt.Sprintf("%s Logger format error with args %s", ts, a)
+		return fmt.Sprintf("Logger format error with args %s", a)
 	}
-	return fmt.Sprintf("%s %s", ts, fmt.Sprintf(format, a[1:]...))
+	return fmt.Sprintf(format, a[1:]...)
 }
 
 // Handler handle the output process
 type Handler interface {
-	output(output interface{}) error
+	debug(output string) error
+	info(output string) error
+	warn(output string) error
+	error(output string) error
 }
 
 // ConsoleHandler output logs to console
@@ -183,12 +219,64 @@ type ConsoleHandler struct {
 	Handler
 }
 
-// NewConsoleHandler ...
+// NewConsoleHandler return ConsoleHandler instance
 func NewConsoleHandler() Handler {
 	return ConsoleHandler{}
 }
 
-func (c ConsoleHandler) output(output interface{}) error {
+func (handler ConsoleHandler) debug(output string) error {
 	_, err := fmt.Println(output)
 	return err
+}
+func (handler ConsoleHandler) info(output string) error {
+	_, err := fmt.Println(aurora.Blue(output))
+	return err
+}
+func (handler ConsoleHandler) warn(output string) error {
+	_, err := fmt.Println(aurora.Green(output))
+	return err
+}
+func (handler ConsoleHandler) error(output string) error {
+	_, err := fmt.Println(aurora.Red(output))
+	return err
+}
+
+// FileHandler output logs to console
+type FileHandler struct {
+	Handler
+	writer *bufio.Writer
+}
+
+// NewFileHandler return FileHandler instance
+func NewFileHandler(fp *os.File, flushIntervalMs int) Handler {
+	h := FileHandler{
+		writer: bufio.NewWriter(fp),
+	}
+	timer := time.NewTimer(time.Duration(flushIntervalMs) * time.Millisecond)
+	go func() {
+		<-timer.C
+		h.writer.Flush()
+	}()
+	return h
+}
+
+func (handler FileHandler) append(msg string) error {
+	data := []byte(msg + "\n")
+	n, err := handler.writer.Write(data)
+	if err == nil && n < len(data) {
+		err = io.ErrShortWrite
+	}
+	return err
+}
+func (handler FileHandler) debug(output string) error {
+	return handler.append(output)
+}
+func (handler FileHandler) info(output string) error {
+	return handler.append(output)
+}
+func (handler FileHandler) warn(output string) error {
+	return handler.append(output)
+}
+func (handler FileHandler) error(output string) error {
+	return handler.append(output)
 }

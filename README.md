@@ -42,6 +42,29 @@ loki.Debug("x: %s", "hi")
 loki.Error("x: %s", "hi")
 ```
 
+### Use file handler
+
+```go
+// "02 Jan 06 15:04 MST"
+l := loki.New("app:xxx")
+fp, err := os.OpenFile("test.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+defer fp.Close()
+flushIntervalMs := 1000
+l.SetHandler(loki.NewFileHandler(fp, flushIntervalMs))
+
+loki.Info("x: %s", "hi")
+```
+
+### Change time format
+
+```go
+// "02 Jan 06 15:04 MST"
+loki.SetTimeFormatter(time.RFC822)
+
+// disable time output
+loki.SetTimeFormatter("")
+```
+
 ### Use you own logger formatter
 
 ```go
