@@ -8,8 +8,8 @@ install:
 	@exec ./bin/dep.sh
 
 release:
-	@git tag $VERSION
-	@git push origin $VERSION
+	@git tag "${VERSION}"
+	@git push origin "${VERSION}"
 
 .PHONY: test
 test:
