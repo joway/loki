@@ -13,6 +13,8 @@ Inspired by a popular NodeJS logger [debug](https://www.npmjs.com/package/debug)
 - Enable logger by environment easily
 - Minimalist
 
+![](./demo.png)
+
 ## Install
 
 ```bash
