@@ -27,6 +27,18 @@ go get github.com/joway/loki@latest
 
 ## Usage
 
+### Use root logger simply
+
+It will not been affected by `LOKI_ENV`.
+
+```go
+loki.SetLevel(loki.INFO)
+
+loki.Info("x: %s", "hi")
+loki.Debug("x: %s", "hi")
+loki.Error("x: %s", "hi")
+```
+
 ### Create you own logger
 
 ```go
@@ -41,18 +53,6 @@ To enable the logger, just add env `LOKI_ENV=app:xxx` in your command, like: `LO
 You can also use `LOKI_ENV=app:a,app:b,model:a` to enable multiple logger.
 
 `LOKI_ENV=*` can enable all loggers.
-
-### Use root logger simply
-
-It will not been affected by `LOKI_ENV`.
-
-```go
-loki.SetLevel(loki.INFO)
-
-loki.Info("x: %s", "hi")
-loki.Debug("x: %s", "hi")
-loki.Error("x: %s", "hi")
-```
 
 ### Use file handler
 
