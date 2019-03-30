@@ -14,7 +14,7 @@ release:
 .PHONY: test
 test:
 	@echo ">> run test"
-	@exec env GO111MODULE=on LOKI_ENV='app:xxx*' go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
+	@exec env GO111MODULE=on LOKI_ENV='app:xxx*' go test -coverprofile=coverage.txt -covermode=atomic -v ./...
 
 fmt:
 	@echo ">> formatting code"
