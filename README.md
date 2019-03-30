@@ -5,7 +5,13 @@
 [![codecov](https://codecov.io/gh/joway/loki/branch/master/graph/badge.svg)](https://codecov.io/gh/joway/loki)
 [![CircleCI](https://circleci.com/gh/joway/loki.svg?style=shield)](https://circleci.com/gh/joway/loki)
 
-This project is inspired by a popular nodejs logger [debug](https://www.npmjs.com/package/debug).
+Inspired by a popular NodeJS logger [debug](https://www.npmjs.com/package/debug).
+
+## Feature
+
+- Colorful console output
+- Enable logger by environment easily
+- Minimalist
 
 ## Install
 
@@ -28,7 +34,11 @@ logger.Debug("x: %s", "hi")
 logger.Error("x: %s", "hi")
 ```
 
-To enable the logger you created, just add env `LOKI_ENV=app:xxx` in your command, like: `LOKI_ENV=app:xxx ./main`. 
+To enable the logger, just add env `LOKI_ENV=app:xxx` in your command, like: `LOKI_ENV=app:xxx ./main`.
+
+You can also use `LOKI_ENV=app:a,app:b,model:a` to enable multiple logger.
+
+`LOKI_ENV=*` can enable all loggers.
 
 ### Use root logger simply
 
