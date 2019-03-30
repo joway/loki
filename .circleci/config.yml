@@ -8,8 +8,8 @@ jobs:
       - checkout
       - run: sudo apt update && sudo apt install -y gcc
       - run: ./bin/dep.sh
-      - run: env GO111MODULE=on go build
-      - run: env GO111MODULE=on go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
+      - run: make format-check
+      - run: make test
       - run: bash <(curl -s https://codecov.io/bash)
 workflows:
   version: 2
