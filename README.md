@@ -1,5 +1,10 @@
 # Loki
 
+![GitHub release](https://img.shields.io/github/tag/joway/loki.svg?label=release)
+[![Go Report Card](https://goreportcard.com/badge/github.com/joway/loki)](https://goreportcard.com/report/github.com/joway/loki)
+[![codecov](https://codecov.io/gh/joway/loki/branch/master/graph/badge.svg)](https://codecov.io/gh/joway/loki)
+[![CircleCI](https://circleci.com/gh/joway/loki.svg?style=shield)](https://circleci.com/gh/joway/loki)
+
 ## Install
 
 ```bash
