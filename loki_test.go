@@ -91,6 +91,8 @@ func TestLoggerFileHandler(t *testing.T) {
 
 func TestLoggerSetting(t *testing.T) {
 	//timeFormat
+	SetTimeFormatter("")
+	assert.Equal(t, "xxx", logger.Compile("xxx"))
 	l := New("app:xxx")
 	assert.Contains(t, l.Compile("xxx"), "app:xxx xxx")
 	l.SetTimeFormatter("")

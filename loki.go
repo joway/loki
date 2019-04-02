@@ -94,14 +94,19 @@ func (l *Logger) SetTimeFormatter(format string) {
 // Compile return final compiled log string
 func (l Logger) Compile(a ...interface{}) string {
 	msg := l.formatter.format(a...)
-	if l.timeFormat == "" {
-		return fmt.Sprintf("%s %s", l.name, msg)
+	prefix := ""
+	if l.timeFormat != "" {
+		ts := time.Now().Format(l.timeFormat)
+		prefix += fmt.Sprintf("%s ", ts)
 	}
-	ts := time.Now().Format(l.timeFormat)
-	if l.name == loggerRootName {
-		return fmt.Sprintf("%s %s", ts, msg)
+	if l.name != loggerRootName {
+		prefix += fmt.Sprintf("%s", l.name)
 	}
-	return fmt.Sprintf("%s %s %s", ts, l.name, msg)
+	if prefix == "" {
+		return msg
+	} else {
+		return fmt.Sprintf("%s %s", prefix, msg)
+	}
 }
 
 // Debug output level DEBUG log
@@ -148,6 +153,11 @@ func SetLevel(level int) {
 // SetHandler set the handler of logger
 func SetHandler(handler Handler) {
 	logger.SetHandler(handler)
+}
+
+// SetTimeFormatter set the time format string of logger
+func SetTimeFormatter(format string) {
+	logger.timeFormat = format
 }
 
 // SetFormatter set the formatter of logger
