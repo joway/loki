@@ -107,35 +107,35 @@ func (l Logger) Compile(a ...interface{}) string {
 // Debug output level DEBUG log
 func (l Logger) Debug(a ...interface{}) {
 	if l.Check() && DEBUG >= l.level {
-		l.handler.debug(l.Compile(a...))
+		_ = l.handler.debug(l.Compile(a...))
 	}
 }
 
 // Info output level INFO log
 func (l Logger) Info(a ...interface{}) {
 	if l.Check() && INFO >= l.level {
-		l.handler.info(l.Compile(a...))
+		_ = l.handler.info(l.Compile(a...))
 	}
 }
 
 // Warn output level WARN log
 func (l Logger) Warn(a ...interface{}) {
 	if l.Check() && WARN >= l.level {
-		l.handler.warn(l.Compile(a...))
+		_ = l.handler.warn(l.Compile(a...))
 	}
 }
 
 // Error output level ERROR log
 func (l Logger) Error(a ...interface{}) {
 	if l.Check() && ERROR >= l.level {
-		l.handler.error(l.Compile(a...))
+		_ = l.handler.error(l.Compile(a...))
 	}
 }
 
 // Fatal output level ERROR log and exit with code 1
 func (l Logger) Fatal(a ...interface{}) {
 	if l.Check() && ERROR >= l.level {
-		l.handler.error(l.Compile(a...))
+		_ = l.handler.error(l.Compile(a...))
 		os.Exit(1)
 	}
 }
@@ -255,7 +255,7 @@ func NewFileHandler(fp *os.File, flushIntervalMs int) Handler {
 	timer := time.NewTimer(time.Duration(flushIntervalMs) * time.Millisecond)
 	go func() {
 		<-timer.C
-		h.writer.Flush()
+		_ = h.writer.Flush()
 	}()
 	return h
 }
