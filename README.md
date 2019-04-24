@@ -9,11 +9,17 @@ Inspired by a popular NodeJS logger library: [debug](https://www.npmjs.com/packa
 
 ## Feature
 
-- zero configuration for most use cases.
+- Out of the box
 - Colorful console output
 - Enable logger by environment easily
 
 ![](./demo.png)
+
+## Difference with other logger library
+
+Sometimes, it's not enough to split loggers by different log level. 
+
+With Loki, you can inject more detailed logs in your code, and enable them by environment variable whenever you want, which makes debug more conveniently.
 
 ## Install
 
@@ -27,12 +33,11 @@ go get github.com/joway/loki@latest
 
 ## Usage
 
-### Use root logger simply
-
-It will not been affected by `LOKI_ENV`.
+### Use root logger
 
 ```go
-loki.SetLevel(loki.INFO)
+// default level is INFO
+loki.SetLevel(loki.DEBUG)
 
 loki.Info("x: %s", "hi")
 loki.Debug("x: %s", "hi")
@@ -42,15 +47,15 @@ loki.Error("x: %s", "hi")
 ### Create your logger
 
 ```go
-logger := loki.New("app:xxx")
+logger := loki.New("app:moduleName")
 logger.Info("x: %s", "hi")
 logger.Debug("x: %s", "hi")
 logger.Error("x: %s", "hi")
 ```
 
-To enable the logger, just add env `LOKI_ENV=app:xxx` in your command, like: `LOKI_ENV=app:xxx ./main`.
+To enable this logger, add env `LOKI_ENV=app:moduleName` in your startup command, like: `LOKI_ENV=app:moduleName ./main`.
 
-You can also use `LOKI_ENV=app:a,app:b,model:a` to enable multiple logger.
+You can also use `LOKI_ENV=app:a,app:b,model:a` to enable multiple loggers.
 
 `LOKI_ENV=*` can enable all loggers.
 
