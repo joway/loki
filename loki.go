@@ -22,24 +22,15 @@ var (
 	ERROR = 4
 
 	loggerRootName = ""
-	loggerEnv      = os.Getenv("LOKI_ENV")
 	logger         = New(loggerRootName)
-	globs          []glob.Glob
 )
-
-func init() {
-	if loggerEnv != "" {
-		patterns := strings.Split(loggerEnv, ",")
-		for _, pattern := range patterns {
-			globs = append(globs, glob.MustCompile(pattern))
-		}
-	}
-}
 
 // Logger is a instance to handle logs
 type Logger struct {
 	name      string
 	level     int
+	env       string
+	patterns  []glob.Glob
 	formatter Formatter
 	handler   Handler
 
@@ -48,13 +39,24 @@ type Logger struct {
 
 // New create a Logger instance with with its name
 func New(name string) Logger {
-	return Logger{
+	//get patterns
+	env, isExisted := os.LookupEnv("LOKI_ENV")
+	if !isExisted {
+		//enable all loggers by default
+		env = "*"
+	}
+
+	l := Logger{
 		name:       name,
 		level:      INFO,
+		env:        env,
 		formatter:  NewStandardFormatter(),
 		handler:    NewConsoleHandler(),
 		timeFormat: time.RFC3339,
 	}
+	l.SetLogEnv(env)
+
+	return l
 }
 
 // Check if logger's name match the LOKI_ENV setting
@@ -62,13 +64,23 @@ func (l Logger) Check() bool {
 	if l.name == loggerRootName {
 		return true
 	}
-	for _, g := range globs {
+	for _, g := range l.patterns {
 		matched := g.Match(l.name)
 		if matched {
 			return true
 		}
 	}
 	return false
+}
+
+// SetLogEnv set the LOKI_ENV of logger
+func (l *Logger) SetLogEnv(env string) {
+	pats := strings.Split(env, ",")
+	var patterns []glob.Glob
+	for _, p := range pats {
+		patterns = append(patterns, glob.MustCompile(p))
+	}
+	l.patterns = patterns
 }
 
 // SetLevel set the level of logger
