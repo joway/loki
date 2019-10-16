@@ -112,7 +112,7 @@ func (l Logger) Compile(a ...interface{}) string {
 		prefix += fmt.Sprintf("%s ", ts)
 	}
 	if l.name != loggerRootName {
-		prefix += fmt.Sprintf("%s", l.name)
+		prefix += fmt.Sprintf("[%s]", l.name)
 	}
 	if prefix == "" {
 		return msg
